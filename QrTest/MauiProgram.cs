@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using ZXing.Net.Maui;          // Extension UseBarcodeReader()
 using ZXing.Net.Maui.Controls; // Ajout de l'espace de noms requis
+
+using QrTest.Pages;
+
 using QrTest.Services;
 using QrTest.ViewModels;
 
@@ -28,6 +31,10 @@ namespace QrTest
             // Hébergeur Blazor dans le WebView
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddSingleton<IApplicationService, ApplicationService>();
+
+            builder.Services.AddSingleton<IApplicationService, ApplicationService>();
+            builder.Services.AddTransient<ScanViewModel>();
+            builder.Services.AddTransient<ScanPage>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
