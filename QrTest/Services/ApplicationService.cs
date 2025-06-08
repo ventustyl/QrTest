@@ -1,12 +1,20 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using QrTest.ViewModels;
 
-namespace QrTest.Services
+namespace QrTest.Services;
+
+public class ApplicationService : IApplicationService
 {
-    internal class ApplicationService
+    private readonly IList<string> _payloads = new List<string>();
+
+    public IReadOnlyList<string> Payloads => _payloads.ToList();
+
+    public Task ProcessQrAsync(string payload)
     {
+        _payloads.Add(payload);
+        Debug.WriteLine($"QR payload processed: {payload}");
+        return Task.CompletedTask;
     }
 }
