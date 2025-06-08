@@ -1,5 +1,6 @@
+using Microsoft.Maui.ApplicationModel;
 using ZXing.Net.Maui;
-using QrTest.ViewModels;          // ? ajoutez cette ligne
+using QrTest.ViewModels;
 
 namespace QrTest.Pages
 {
@@ -18,7 +19,7 @@ namespace QrTest.Pages
             var qr = e.Results.FirstOrDefault(r => r.Format == BarcodeFormat.QrCode);
             if (qr is null) return;
 
-            // 2. Basculer côté UI principal
+            // 2. Basculer cÃ´tÃ© UI principal
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 Scanner.IsDetecting = false;
@@ -31,7 +32,7 @@ namespace QrTest.Pages
         {
             base.OnAppearing();
 
-            // Exemple : n’accepter que le QR Code, activer l’auto-rotation
+            // Exemple : nÂ’accepter que le QR Code, activer lÂ’auto-rotation
             Scanner.Options = new BarcodeReaderOptions
             {
                 Formats = BarcodeFormat.QrCode,
