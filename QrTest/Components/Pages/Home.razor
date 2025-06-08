@@ -1,0 +1,15 @@
+﻿@page "/"
+
+@using Microsoft.Maui.Controls
+@using Microsoft.Maui.Dispatching
+@inject IDispatcher Dispatcher
+
+<button class="btn btn-primary" @onclick="OpenScanner">Scanner un QR</button>
+
+@code {
+    private void OpenScanner()
+    {
+        Dispatcher.Dispatch(async () =>
+            await Shell.Current.GoToAsync(nameof(QrTest.Pages.ScanPage)));
+    }
+}
