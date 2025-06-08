@@ -1,15 +1,23 @@
 ﻿@page "/"
+@inject QrTest.Services.IApplicationService AppSvc
 
-@using Microsoft.Maui.Controls
-@using Microsoft.Maui.Dispatching
-@inject IDispatcher Dispatcher
+<h3>Accueil</h3>
 
-<button class="btn btn-primary" @onclick="OpenScanner">Scanner un QR</button>
+<button class="btn btn-primary" @onclick="OpenScanner">
+    Scanner un QR
+</button>
 
-@code {
-    private void OpenScanner()
+@if (AppSvc.Payloads.Any())
+{
+    <h4>Dernier scan :</h4>
+    <div class="alert alert-success">@AppSvc.Payloads.Last()</div>
+}
+
+@code
+{
+    private async Task OpenScanner()
     {
-        Dispatcher.Dispatch(async () =>
-            await Shell.Current.GoToAsync(nameof(QrTest.Pages.ScanPage)));
+        // Navigation Shell vers la page native
+        await Shell.Current.GoToAsync(nameof(QrTest.Pages.ScanPage));
     }
 }

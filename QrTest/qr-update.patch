@@ -1,0 +1,129 @@
+﻿diff --git a/App.xaml.cs b/App.xaml.cs
+index 1c23456..2d34567 100644
+--- a/App.xaml.cs
++++ b/App.xaml.cs
+@@
+-        MainPage = new MainPage();
++        MainPage = new AppShell();
+     }
+ }
+ 
+diff --git a/MauiProgram.cs b/MauiProgram.cs
+index 8a9bcde..9b0cdef 100644
+--- a/MauiProgram.cs
++++ b/MauiProgram.cs
+@@
+-        builder.Services.AddSingleton<IApplicationService, ApplicationService>();
++        builder.Services.AddSingleton<IApplicationService, ApplicationService>();
++        builder.Services.AddTransient<ScanViewModel>();
++        builder.Services.AddTransient<ScanPage>();
+ 
+         return builder.Build();
+     }
+ }
+ 
+diff --git a/Pages/Home.razor b/Pages/Home.razor
+index 123abcd..234bcde 100644
+--- a/Pages/Home.razor
++++ b/Pages/Home.razor
+@@
+-<button class="btn btn-primary" @onclick="OpenScanner">
++<button class="btn btn-primary" @onclick="OpenScanner">
+     Scanner un QR
+ </button>
+ 
+-@code {
+-    private async Task OpenScanner()
+-    {
+-        await Shell.Current.GoToAsync(nameof(QrTest.Pages.ScanPage));
+-    }
+-}
++@if (AppSvc.Payloads.Any())
++{
++    <h4>Dernier scan :</h4>
++    <div class="alert alert-success">@AppSvc.Payloads.Last()</div>
++}
++
++@code {
++    [Inject] private QrTest.Services.IApplicationService AppSvc { get; set; } = default!;
++
++    private async Task OpenScanner()
++        => await Shell.Current.GoToAsync(nameof(QrTest.Pages.ScanPage));
++}
+ 
+diff --git a/Pages/ScanPage.xaml.cs b/Pages/ScanPage.xaml.cs
+index 45def01..56ef012 100644
+--- a/Pages/ScanPage.xaml.cs
++++ b/Pages/ScanPage.xaml.cs
+@@
+         var qr = e.Results.FirstOrDefault(r => r.Format == BarcodeFormat.QrCode);
+         if (qr is null) return;
+ 
+         MainThread.BeginInvokeOnMainThread(async () =>
+         {
+-            await _vm.HandleQrAsync(qr.Value);
+-            await Shell.Current.GoToAsync("..");
++            CameraBarcodeReaderView.IsDetecting = false;
++            await _vm.HandleQrAsync(qr.Value);
++            await Shell.Current.GoToAsync("..");
+         });
+     }
+ }
+ 
+diff --git a/AppShell.xaml b/AppShell.xaml
+new file mode 100644
+--- /dev/null
++++ b/AppShell.xaml
+@@
++<?xml version="1.0" encoding="utf-8" ?>
++<Shell
++    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
++    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
++    xmlns:pages="clr-namespace:QrTest.Pages"
++    x:Class="QrTest.AppShell">
++
++    <TabBar>
++        <ShellContent
++            Title="Accueil"
++            Icon="home.svg"
++            ContentTemplate="{DataTemplate pages:MainPage}" />
++    </TabBar>
++</Shell>
++
+diff --git a/AppShell.xaml.cs b/AppShell.xaml.cs
+new file mode 100644
+--- /dev/null
++++ b/AppShell.xaml.cs
+@@
++namespace QrTest;
++
++public partial class AppShell : Shell
++{
++    public AppShell()
++    {
++        InitializeComponent();
++        Routing.RegisterRoute(nameof(Pages.ScanPage), typeof(Pages.ScanPage));
++    }
++}
++
+diff --git a/Pages/NavMenu.razor b/Pages/NavMenu.razor
+index 67f89ab..0000000 100644
+--- a/Pages/NavMenu.razor
++++ b/Pages/NavMenu.razor
+@@
+-    <li class="nav-item px-3">
+-        <NavLink class="nav-link" href="counter">
+-            <span class="oi oi-plus" aria-hidden="true"></span> Counter
+-        </NavLink>
+-    </li>
+-    <li class="nav-item px-3">
+-        <NavLink class="nav-link" href="fetchdata">
+-            <span class="oi oi-list-rich" aria-hidden="true"></span> Weather
+-        </NavLink>
+-    </li>
++    @* Liens de démo supprimés pour se concentrer sur le QR *@
+ 
+diff --git a/Pages/Counter.razor b/Pages/Counter.razor
+deleted file mode 100644
+diff --git a/Pages/Weather.razor b/Pages/Weather.razor
+deleted file mode 100644
